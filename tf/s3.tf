@@ -1,6 +1,5 @@
 resource "aws_s3_bucket" "main" { #tfsec:ignore:aws-s3-enable-bucket-logging tfsec:ignore:aws-s3-enable-versioning
   bucket = var.domain
-  acl    = "private"
   policy = templatefile("s3-cf-oai-policy.tftpl", {
     oai_arn = aws_cloudfront_origin_access_identity.oai.iam_arn
     bucket  = var.domain
@@ -40,4 +39,9 @@ resource "aws_s3_bucket_website_configuration" "main" {
   error_document {
     key = "error.html"
   }
+}
+
+resource "aws_s3_bucket_acl" "main" {
+  bucket = aws_s3_bucket.main.id
+  acl    = "private"
 }
