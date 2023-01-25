@@ -1,10 +1,5 @@
 resource "aws_s3_bucket" "main" { #tfsec:ignore:aws-s3-enable-bucket-logging tfsec:ignore:aws-s3-enable-versioning
-  bucket = var.domain
-  policy = templatefile("s3-cf-oai-policy.tftpl", {
-    oai_arn = aws_cloudfront_origin_access_identity.oai.iam_arn
-    bucket  = var.domain
-    }
-  )
+  bucket        = var.domain
   force_destroy = false
 }
 
@@ -44,4 +39,13 @@ resource "aws_s3_bucket_website_configuration" "main" {
 resource "aws_s3_bucket_acl" "main" {
   bucket = aws_s3_bucket.main.id
   acl    = "private"
+}
+
+resource "aws_s3_bucket_policy" "main" {
+  bucket = aws_s3_bucket.main.id
+  policy = templatefile("s3-cf-oai-policy.tftpl", {
+    oai_arn = aws_cloudfront_origin_access_identity.oai.iam_arn
+    bucket  = var.domain
+    }
+  )
 }
