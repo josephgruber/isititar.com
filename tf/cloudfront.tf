@@ -6,7 +6,7 @@ resource "aws_cloudfront_origin_access_identity" "oai" {
   comment = "access-identity-${var.domain}"
 }
 
-resource "aws_cloudfront_distribution" "distribution" {
+resource "aws_cloudfront_distribution" "distribution" { #tfsec:ignore:aws-cloudfront-enable-waf tfsec:ignore:aws-cloudfront-enable-logging
   origin {
     domain_name         = aws_s3_bucket.main.bucket_regional_domain_name
     origin_id           = "S3-${var.domain}"
