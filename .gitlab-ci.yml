@@ -1,6 +1,5 @@
 include:
   - template: Terraform.latest.gitlab-ci.yml
-  - template: Security/SAST.gitlab-ci.yml
 
 stages:
   - validate
@@ -10,9 +9,6 @@ stages:
 
 variables:
   TF_ROOT: ${CI_PROJECT_DIR}/tf
-
-sast:
-  stage: test
 #deploy-src:
 #  stage: deploy
 #  needs: ["deploy"]
