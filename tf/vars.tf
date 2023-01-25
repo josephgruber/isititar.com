@@ -4,7 +4,7 @@ variable "aws_region" {
   default     = "us-east-1"
 }
 
-variable "tags" {
+variable "default_tags" {
   type = map(string)
   default = {
     Project = "isititar.com"
