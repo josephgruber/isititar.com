@@ -34,7 +34,7 @@ $(document).on("click", "div.answer, #eightball img", function () {
             let item = $(`<div class="answer">${answer}</div>`).hide();
 
             $("#eightball").append(item);
-            item.fadeIn(2000);
+            item.fadeIn(2500);
         });
 });
 

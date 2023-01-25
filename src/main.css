@@ -19,12 +19,13 @@ body {
 }
 
 .answer {
-    font-size: 0.85em;
+    font-size: 0.9em;
+    text-align: center;
     color: #fff;
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
+    /* top: 0;
+    left: 0; */
+    width: 100px;
     height: 100%;
     display: flex;
     justify-content: center;
