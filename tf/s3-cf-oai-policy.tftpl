@@ -3,12 +3,18 @@
     "Id": "PolicyForCloudFrontPrivateContent",
     "Statement": [
         {
+            "Sid": "AllowCloudFrontServicePrincipal",
             "Effect": "Allow",
             "Principal": {
-                "AWS": "${oai_arn}"
+                "Service": "cloudfront.amazonaws.com"
             },
             "Action": "s3:GetObject",
-            "Resource": "arn:aws:s3:::${bucket}/*"
+            "Resource": "arn:aws:s3:::${bucket_name}/*",
+            "Condition": {
+                "StringEquals": {
+                    "AWS:SourceArn": "arn:aws:cloudfront::${account}:distribution/${distribution}"
+                }
+            }
         }
     ]
 }

@@ -1,35 +1,30 @@
+locals {
+  s3_origin_id = "s3IsItITAR"
+}
+
 data "aws_cloudfront_cache_policy" "cache_policy" {
   name = "Managed-CachingOptimized"
 }
 
-resource "aws_cloudfront_origin_access_identity" "oai" {
-  comment = "access-identity-${var.domain}"
-}
+resource "aws_cloudfront_distribution" "s3" { #tfsec:ignore:aws-cloudfront-enable-logging tfsec:ignore:aws-cloudfront-enable-waf
+  aliases         = [var.domain]
+  enabled         = true
+  is_ipv6_enabled = true
+  price_class     = "PriceClass_100"
 
-resource "aws_cloudfront_distribution" "distribution" { #tfsec:ignore:aws-cloudfront-enable-waf tfsec:ignore:aws-cloudfront-enable-logging
   origin {
-    domain_name         = aws_s3_bucket.main.bucket_regional_domain_name
-    origin_id           = "S3-${var.domain}"
-    connection_attempts = 3
-    connection_timeout  = 10
-
-    s3_origin_config {
-      origin_access_identity = aws_cloudfront_origin_access_identity.oai.cloudfront_access_identity_path
-    }
+    domain_name              = aws_s3_bucket.main.bucket_regional_domain_name
+    origin_access_control_id = aws_cloudfront_origin_access_control.s3.id
+    origin_id                = local.s3_origin_id
   }
-  enabled             = true
-  is_ipv6_enabled     = true
-  aliases             = [var.domain]
-  default_root_object = "index.html"
-  price_class         = "PriceClass_100"
 
   default_cache_behavior {
-    cache_policy_id        = data.aws_cloudfront_cache_policy.cache_policy.id
     allowed_methods        = ["GET", "HEAD"]
+    cache_policy_id        = data.aws_cloudfront_cache_policy.cache_policy.id
     cached_methods         = ["GET", "HEAD"]
-    target_origin_id       = "S3-${var.domain}"
-    viewer_protocol_policy = "redirect-to-https"
     compress               = true
+    target_origin_id       = local.s3_origin_id
+    viewer_protocol_policy = "redirect-to-https"
   }
 
   restrictions {
@@ -37,10 +32,18 @@ resource "aws_cloudfront_distribution" "distribution" { #tfsec:ignore:aws-cloudf
       restriction_type = "none"
     }
   }
-  viewer_certificate {
-    acm_certificate_arn      = aws_acm_certificate_validation.validation.certificate_arn
-    ssl_support_method       = "sni-only"
-    minimum_protocol_version = "TLSv1.2_2021"
-  }
 
+  viewer_certificate {
+    acm_certificate_arn      = aws_acm_certificate.cloudfront_certificate.arn
+    minimum_protocol_version = "TLSv1.2_2021"
+    ssl_support_method       = "sni-only"
+  }
+}
+
+resource "aws_cloudfront_origin_access_control" "s3" {
+  name                              = aws_s3_bucket.main.bucket_regional_domain_name
+  description                       = "-"
+  origin_access_control_origin_type = "s3"
+  signing_behavior                  = "always"
+  signing_protocol                  = "sigv4"
 }

@@ -1,6 +1,5 @@
 resource "aws_s3_bucket" "main" { #tfsec:ignore:aws-s3-enable-bucket-logging tfsec:ignore:aws-s3-enable-versioning
-  bucket        = var.domain
-  force_destroy = false
+  bucket = var.domain
 }
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "main" { #tfsec:ignore:aws-s3-encryption-customer-key
@@ -30,10 +29,6 @@ resource "aws_s3_bucket_website_configuration" "main" {
   index_document {
     suffix = "index.html"
   }
-
-  error_document {
-    key = "error.html"
-  }
 }
 
 resource "aws_s3_bucket_acl" "main" {
@@ -41,11 +36,11 @@ resource "aws_s3_bucket_acl" "main" {
   acl    = "private"
 }
 
-resource "aws_s3_bucket_policy" "main" {
+resource "aws_s3_bucket_policy" "cloudfront_policy" {
   bucket = aws_s3_bucket.main.id
   policy = templatefile("s3-cf-oai-policy.tftpl", {
-    oai_arn = aws_cloudfront_origin_access_identity.oai.iam_arn
-    bucket  = var.domain
-    }
-  )
+    bucket_name  = aws_s3_bucket.main.id,
+    account      = data.aws_caller_identity.account.account_id,
+    distribution = aws_cloudfront_distribution.s3.id
+  })
 }

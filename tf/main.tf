@@ -19,3 +19,5 @@ provider "aws" {
     tags = var.default_tags
   }
 }
+
+data "aws_caller_identity" "account" {}

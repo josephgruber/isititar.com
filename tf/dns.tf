@@ -1,7 +1,5 @@
 resource "aws_route53_zone" "zone" {
-  name          = var.domain
-  comment       = ""
-  force_destroy = false
+  name = var.domain
 }
 
 resource "aws_route53_record" "nameservers" {
@@ -35,8 +33,8 @@ resource "aws_route53_record" "root" {
   type    = "A"
 
   alias {
-    name                   = aws_cloudfront_distribution.distribution.domain_name
-    zone_id                = aws_cloudfront_distribution.distribution.hosted_zone_id
+    name                   = aws_cloudfront_distribution.s3.domain_name
+    zone_id                = aws_cloudfront_distribution.s3.hosted_zone_id
     evaluate_target_health = false
   }
 }
