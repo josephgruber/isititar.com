@@ -21,11 +21,13 @@ const answers = [
 $(document).on("click", "div.answer, #eightball img", function () {
     $("div.answer").remove();
 
+    let directions = ["up", "left"];
     let shakes = Math.floor(Math.random() * 15) + 5;
     let distance = Math.floor(Math.random() * 40) + 20;
     let speed = Math.floor(Math.random() * 2500) + 1000;
+    let direction = directions[Math.floor(Math.random() * directions.length)];
 
-    $("#eightball img").effect("shake", { times: shakes, distance: distance }, speed);
+    $("#eightball img").effect("shake", { direction: direction, times: shakes, distance: distance }, speed);
 
     $("#eightball img")
         .promise()
