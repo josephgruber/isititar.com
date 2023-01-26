@@ -7,10 +7,11 @@ data "aws_cloudfront_cache_policy" "cache_policy" {
 }
 
 resource "aws_cloudfront_distribution" "s3" { #tfsec:ignore:aws-cloudfront-enable-logging tfsec:ignore:aws-cloudfront-enable-waf
-  aliases         = [var.domain]
-  enabled         = true
-  is_ipv6_enabled = true
-  price_class     = "PriceClass_100"
+  aliases             = [var.domain]
+  default_root_object = "index.html"
+  enabled             = true
+  is_ipv6_enabled     = true
+  price_class         = "PriceClass_100"
 
   origin {
     domain_name              = aws_s3_bucket.main.bucket_regional_domain_name
