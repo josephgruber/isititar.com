@@ -1,4 +1,6 @@
 const answers = [
+    "¯\\_(ツ)_/¯",
+    "I'm a magic 8 ball, not a lawyer",
     "It is certain",
     "Without a doubt",
     "Yes definitely",
@@ -16,6 +18,7 @@ const answers = [
     "Outlook not so good",
     "My sources say no",
     "Very doubtful",
+    "Who honestly knows",
 ];
 
 $(document).on("click", "div.answer, #eightball img", function () {
