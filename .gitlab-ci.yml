@@ -9,12 +9,12 @@ stages:
 
 variables:
   TF_ROOT: ${CI_PROJECT_DIR}/tf
-#deploy-src:
-#  stage: deploy
-#  needs: ["deploy"]
-#  image: public.ecr.aws/aws-cli/aws-cli:latest
-#  script:
-#    - aws s3 sync src/ s3://$S3_BUCKET_NAME --delete --exclude '.git/*' --exclude '.gitlab-ci.yml' --exclude 'tf/*'
-#    - aws cloudfront create-invalidation --distribution-id $CLOUDFRONT_DISTRIBUTION_ID --paths "/*"
-#  only:
-#    - main
+
+deploy-src:
+  stage: deploy
+  image: public.ecr.aws/aws-cli/aws-cli:latest
+  script:
+    - aws s3 sync src/ s3://$S3_BUCKET_NAME --delete --exclude '.git/*' --exclude '.gitlab-ci.yml' --exclude 'tf/*'
+    - aws cloudfront create-invalidation --distribution-id $CLOUDFRONT_DISTRIBUTION_ID --paths "/*"
+  only:
+    - main
