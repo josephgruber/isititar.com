@@ -19,6 +19,7 @@ const answers = [
     "My sources say no",
     "Very doubtful",
     "Who honestly knows",
+    "LOL",
 ];
 
 $(document).on("click", "div.answer, #eightball img", function () {
