@@ -10,9 +10,10 @@ stages:
 variables:
   TF_ROOT: ${CI_PROJECT_DIR}/tf
 
-deploy-src:
+deploy:src:
   stage: deploy
-  image: public.ecr.aws/aws-cli/aws-cli:latest
+  needs: ["deploy"]
+  image: registry.gitlab.com/gitlab-org/cloud-deploy/aws-base:latest
   script:
     - cd ${CI_PROJECT_DIR}/src
     - aws s3 sync . s3://$S3_BUCKET_NAME --delete
