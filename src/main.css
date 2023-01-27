@@ -132,6 +132,12 @@ body {
     }
 }
 
+@media (max-width: 768px) {
+    #eightball img {
+        max-width: 90%;
+    }
+}
+
 @media (max-width: 500px) {
     .gitlab-corner:hover .cls-1,
     .gitlab-corner:hover .cls-2,
