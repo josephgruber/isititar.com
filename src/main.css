@@ -136,6 +136,11 @@ body {
     #eightball img {
         max-width: 90%;
     }
+
+    .answer {
+        font-size: 0.8em;
+        width: 70px;
+    }
 }
 
 @media (max-width: 500px) {
