@@ -2,6 +2,10 @@ resource "aws_acm_certificate" "cloudfront_certificate" {
   domain_name       = var.domain
   validation_method = "DNS"
 
+  options {
+    certificate_transparency_logging_preference = "ENABLED"
+  }
+
   lifecycle {
     create_before_destroy = true
   }
