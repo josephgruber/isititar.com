@@ -11,6 +11,16 @@ resource "aws_s3_bucket_public_access_block" "main" {
   restrict_public_buckets = true
 }
 
+resource "aws_s3_bucket_server_side_encryption_configuration" "main" { #tfsec:ignore:aws-s3-encryption-customer-key
+  bucket = aws_s3_bucket.main.bucket
+
+  rule {
+    apply_server_side_encryption_by_default {
+      sse_algorithm = "AES256"
+    }
+  }
+}
+
 resource "aws_s3_bucket_policy" "cloudfront_policy" {
   bucket = aws_s3_bucket.main.id
   policy = templatefile("s3-cf-oac-policy.tftpl", {
