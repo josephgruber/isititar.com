@@ -20,6 +20,7 @@ const answers = [
     "Very doubtful",
     "Who honestly knows",
     "LOL",
+    "Ask Elon"
 ];
 
 $(document).on("click", "div.answer, #eightball img", function () {
