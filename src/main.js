@@ -1,3 +1,4 @@
+// Secret sauce below. Shhh, it's ITAR controlled!
 const answers = [
     "¯\\_(ツ)_/¯",
     "I'm a magic 8 ball, not a lawyer",
@@ -24,16 +25,29 @@ const answers = [
 ];
 
 $(document).on("click", "div.answer, #eightball img", function () {
+    // Check if the action is already in progress. If so, return without running
+    if ($("#eightball").data('inProgress')) {
+        return;
+    }
+
+    // Set the `inProgress` flag to true to indicate the eightball  is in progress
+    $("#eightball").data('inProgress', true);
+
+    console.log("Click")
+    // Remove any existing answer
     $("div.answer").remove();
 
+    // Randomize the direction, count, distance, and speed of the shake each time
     let directions = ["up", "left"];
     let shakes = Math.floor(Math.random() * 15) + 5;
     let distance = Math.floor(Math.random() * 40) + 20;
     let speed = Math.floor(Math.random() * 2500) + 1000;
     let direction = directions[Math.floor(Math.random() * directions.length)];
 
+    // Shake the eightball!
     $("#eightball img").effect("shake", { direction: direction, times: shakes, distance: distance }, speed);
 
+    // Return a random answer fading in over a short period
     $("#eightball img")
         .promise()
         .done(function () {
@@ -42,10 +56,14 @@ $(document).on("click", "div.answer, #eightball img", function () {
 
             $("#eightball").append(item);
             item.fadeIn(2500);
+
+            // Reset the `inProgress` flag to false as the action is complete
+            $("#eightball").data('inProgress', false);
         });
 });
 
 function getAnswer() {
+    // Gets a random answer from the `answers` constant
     let randomNumber = Math.floor(Math.random() * answers.length);
     let answer = answers[randomNumber];
 
