@@ -39,7 +39,10 @@ resource "aws_kms_key" "ksk" {
         Sid : "Enable IAM User Permissions",
         Effect : "Allow",
         Principal : {
-          AWS = "arn:aws:iam::${data.aws_caller_identity.account.account_id}:root"
+          AWS = [
+            "arn:aws:iam::${data.aws_caller_identity.account.account_id}:root",
+            "arn:aws:iam::${data.aws_caller_identity.account.account_id}:user/gitlab"
+          ]
         },
         Action : "kms:*",
         Resource : "*"
