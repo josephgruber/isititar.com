@@ -1,4 +1,7 @@
-resource "aws_s3_bucket" "main" { #tfsec:ignore:aws-s3-enable-bucket-logging tfsec:ignore:aws-s3-enable-versioning
+#trivy:ignore:AVD-AWS-0089
+#trivy:ignore:AVD-AWS-0320
+#trivy:ignore:AVD-AWS-0090
+resource "aws_s3_bucket" "main" {
   bucket = var.domain
 }
 
