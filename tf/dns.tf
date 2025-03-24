@@ -110,3 +110,12 @@ resource "aws_route53_record" "root" {
     evaluate_target_health = false
   }
 }
+
+resource "aws_route53_record" "bsky" {
+  zone_id = aws_route53_zone.zone.zone_id
+  name    = "_atproto.${var.domain}"
+  type    = "TXT"
+  ttl     = "3600"
+  records = ["did=did:plc:mkfxmzs6gyhy2lfbml3ls53h"]
+
+}
