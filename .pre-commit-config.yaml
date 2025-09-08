@@ -23,7 +23,7 @@ repos:
           - --args=-write=true
       - id: terraform_tflint
         args:
-          - --args=--config=__GIT_WORKING_DIR__/tf/.tflint.hcl
+          - --args=--config=__GIT_WORKING_DIR__/infra/.tflint.hcl
       - id: terraform_trivy
         args:
-          - --args=--config=__GIT_WORKING_DIR__/tf/trivy.yml
+          - --args=--config=__GIT_WORKING_DIR__/infra/trivy.yml
