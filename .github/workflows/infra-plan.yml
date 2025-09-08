@@ -6,8 +6,9 @@ on:
         paths: ["infra/infra-website/**"]
 
 permissions:
-    pull-requests: write
     contents: read
+    id-token: write
+    pull-requests: write
 
 jobs:
     infra-plan:
@@ -27,8 +28,7 @@ jobs:
             - name: Configure AWS credentials
               uses: aws-actions/configure-aws-credentials@v5
               with:
-                  aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-                  aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+                  role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
                   aws-region: ${{ secrets.AWS_REGION }}
 
             - name: Setup OpenTofu
