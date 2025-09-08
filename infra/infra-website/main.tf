@@ -110,6 +110,12 @@ resource "aws_cloudfront_origin_access_control" "s3" {
   signing_protocol                  = "sigv4"
 }
 
+resource "aws_ssm_parameter" "cloudfront" {
+  name  = "/website/cloudfront-distribution"
+  type  = "String"
+  value = aws_cloudfront_distribution.s3.id
+}
+
 # =================================================================================
 # Certificate Manager for Cloudfront Distribution
 # =================================================================================
