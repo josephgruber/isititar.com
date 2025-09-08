@@ -3,10 +3,7 @@ name: Infrastructure
 on:
     push:
         branches: [main]
-        paths: ["tf/**"]
-    pull_request:
-        branches: [main]
-        paths: ["tf/**"]
+        paths: ["tf/infra-website/**"]
     workflow_dispatch:
 
 jobs:
@@ -15,15 +12,15 @@ jobs:
         runs-on: ubuntu-latest
         defaults:
             run:
-                working-directory: tf
+                working-directory: tf/infra-website
 
         steps:
             - uses: actions/checkout@v5
 
-            - name: Setup Terraform
-              uses: hashicorp/setup-terraform@v3
+            - name: Setup OpenTofu
+              uses: opentofu/setup-opentofu@v1
               with:
-                  terraform_version: ~1.0
+                  tofu_version: ~1.10
 
             - name: Configure AWS credentials
               uses: aws-actions/configure-aws-credentials@v5
@@ -32,14 +29,14 @@ jobs:
                   aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
                   aws-region: ${{ secrets.AWS_REGION }}
 
-            - name: Terraform Init
-              run: terraform init
+            - name: OpenTofu Init
+              run: tofu init -backend-config="bucket=${{ secrets.TF_STATE_BUCKET }}"
 
-            - name: Terraform Validate
-              run: terraform validate
+            - name: OpenTofu Validate
+              run: tofu validate
 
-            - name: Terraform Plan
-              run: terraform plan
+            - name: OpenTofu Plan
+              run: tofu plan
 
     apply:
         name: Apply Infrastructure Changes
@@ -49,15 +46,15 @@ jobs:
         environment: tf-apply
         defaults:
             run:
-                working-directory: tf
+                working-directory: tf/infra-website
 
         steps:
             - uses: actions/checkout@v5
 
-            - name: Setup Terraform
-              uses: hashicorp/setup-terraform@v3
+            - name: Setup OpenTofu
+              uses: opentofu/setup-opentofu@v1
               with:
-                  terraform_version: ~1.0
+                  tofu_version: ~1.10
 
             - name: Configure AWS credentials
               uses: aws-actions/configure-aws-credentials@v5
@@ -66,8 +63,8 @@ jobs:
                   aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
                   aws-region: ${{ secrets.AWS_REGION }}
 
-            - name: Terraform Init
-              run: terraform init
+            - name: OpenTofu Init
+              run: tofu init -backend-config="bucket=${{ secrets.TF_STATE_BUCKET }}"
 
-            - name: Terraform Apply
-              run: terraform apply -auto-approve
+            - name: OpenTofu Apply
+              run: tofu apply -auto-approve
