@@ -38,11 +38,12 @@ jobs:
             - name: Download OpenTofu Plan Artifact
               uses: dawidd6/action-download-artifact@v11
               with:
-                  pr: ${{ github.event.pull_request.number }}
-                  workflow: infra-plan.yml
-                  name: opentofu-plan
                   if_no_artifact_found: fail
+                  name: opentofu-plan
+                  path: infra/infra-website
+                  pr: ${{ github.event.pull_request.number }}
                   use_unzip: true
+                  workflow: infra-plan.yml
 
             - name: Setup OpenTofu
               uses: opentofu/setup-opentofu@v1
