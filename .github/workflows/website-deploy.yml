@@ -33,13 +33,21 @@ jobs:
                   role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
                   aws-region: ${{ secrets.AWS_REGION }}
 
+            - name: Get parameters from SSM
+              id: get-params
+              run: |
+                  BUCKET_NAME=$(aws ssm get-parameter --name "/website/bucket-name" --query "Parameter.Value" --output text)
+                  DISTRIBUTION_ID=$(aws ssm get-parameter --name "/website/cloudfront-distribution" --query "Parameter.Value" --output text)
+                  echo "bucket-name=$BUCKET_NAME" >> $GITHUB_OUTPUT
+                  echo "distribution-id=$DISTRIBUTION_ID" >> $GITHUB_OUTPUT
+
             - name: Sync to S3
               run: |
                   cd src
-                  aws s3 sync . s3://${{ secrets.S3_BUCKET_NAME }} --delete
+                  aws s3 sync . s3://${{ steps.get-params.outputs.bucket-name }} --delete
 
             - name: Invalidate CloudFront
               run: |
                   aws cloudfront create-invalidation \
-                    --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} \
+                    --distribution-id ${{ steps.get-params.outputs.distribution-id }} \
                     --paths "/*"
