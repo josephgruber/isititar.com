@@ -8,8 +8,8 @@ locals {
 # S3 Bucket for Website Content
 # =================================================================================
 # trivy:ignore:s3-bucket-logging # Logging not required for this use case
-resource "aws_s3_bucket" "main" { # trivy:ignore:AVD-AWS-0320 # TODO: Rename bucket to pass AVD
-  bucket = var.domain
+resource "aws_s3_bucket" "main" { # trivy:ignore:AVD-AWS-0320
+  bucket_prefix = "${var.domain}-"
 
   lifecycle {
     prevent_destroy = true
@@ -52,6 +52,12 @@ resource "aws_s3_bucket_versioning" "this" {
   versioning_configuration {
     status = "Disabled"
   }
+}
+
+resource "aws_ssm_parameter" "this" {
+  name  = "/website/bucket-name"
+  type  = "String"
+  value = aws_s3_bucket.main.id
 }
 
 # =================================================================================
