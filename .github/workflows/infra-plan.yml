@@ -1,0 +1,117 @@
+name: Infrastructure Review
+
+on:
+    pull_request:
+        branches: [main]
+        paths: ["infra/infra-website/**"]
+
+permissions:
+    pull-requests: write
+    contents: read
+
+jobs:
+    infra-plan:
+        name: Plan Infrastructure Changes
+        runs-on: ubuntu-latest
+        defaults:
+            run:
+                shell: bash
+                working-directory: ${{ env.tf_actions_working_dir }}
+        env:
+            tf_actions_working_dir: "infra/infra-website"
+
+        steps:
+            - name: Checkout repo
+              uses: actions/checkout@v5
+
+            - name: Configure AWS credentials
+              uses: aws-actions/configure-aws-credentials@v5
+              with:
+                  aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+                  aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+                  aws-region: ${{ secrets.AWS_REGION }}
+
+            - name: Setup OpenTofu
+              uses: opentofu/setup-opentofu@v1
+
+            - name: OpenTofu Format
+              id: fmt
+              run: tofu fmt -check
+              continue-on-error: true
+
+            - name: OpenTofu Init
+              id: init
+              run: tofu init -backend-config="bucket=${{ secrets.TF_STATE_BUCKET }}"
+
+            - name: OpenTofu Validate
+              id: validate
+              run: tofu validate
+
+            - name: OpenTofu Plan
+              id: plan
+              run: tofu plan -no-color -input=false -out=tfplan
+              continue-on-error: true
+
+            - name: Upload OpenTofu Plan Artifact
+              uses: actions/upload-artifact@v4
+              with:
+                  name: opentofu-plan
+                  path: tfplan
+                  overwrite: true
+
+            - uses: actions/github-script@v8
+              env:
+                  PLAN: "tofu\n${{ steps.plan.outputs.stdout }}"
+              with:
+                  github-token: ${{ secrets.GITHUB_TOKEN }}
+                  script: |
+                      // 1. Retrieve existing bot comments for the PR
+                      const { data: comments } = await github.rest.issues.listComments({
+                          owner: context.repo.owner,
+                          repo: context.repo.repo,
+                          issue_number: context.issue.number,
+                      })
+                      const botComment = comments.find(comment => {
+                        return comment.user.type === 'Bot' && comment.body.includes('OpenTofu Format and Style')
+                      })
+
+                      // 2. Prepare format of the comment
+                      const output = `#### OpenTofu Format and Style 🖌\`${{ steps.fmt.outcome }}\`
+                      #### OpenTofu Initialization ⚙️\`${{ steps.init.outcome }}\`
+                      #### OpenTofu Validation 🤖\`${{ steps.validate.outcome }}\`
+                      <details><summary>Validation Output</summary>
+
+                      \`\`\`\n
+                      ${{ steps.validate.outputs.stdout }}
+                      \`\`\`
+
+                      </details>
+
+                      #### OpenTofu Plan 📖\`${{ steps.plan.outcome }}\`
+
+                      <details><summary>Show Plan</summary>
+
+                      \`\`\`\n
+                      ${process.env.PLAN}
+                      \`\`\`
+
+                      </details>
+
+                      *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Working Directory: \`${{ env.tf_actions_working_dir }}\`, Workflow: \`${{ github.workflow }}\`*`;
+
+                      // 3. If we have a comment, update it, otherwise create a new one
+                      if (botComment) {
+                          github.rest.issues.updateComment({
+                          owner: context.repo.owner,
+                          repo: context.repo.repo,
+                          comment_id: botComment.id,
+                          body: output
+                          })
+                      } else {
+                          github.rest.issues.createComment({
+                          issue_number: context.issue.number,
+                          owner: context.repo.owner,
+                          repo: context.repo.repo,
+                          body: output
+                          })
+                      }

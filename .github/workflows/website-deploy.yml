@@ -1,16 +1,27 @@
 name: Deploy Website
 
 on:
-    push:
+    pull_request:
+        types: [closed]
         branches: [main]
         paths: ["src/**"]
+    workflow_run:
+        workflows: ["Deploy Infrastructure"]
+        types: [completed]
+        branches: [main]
     workflow_dispatch:
 
+permissions:
+    contents: read
+
 jobs:
-    deploy:
+    deploy-website:
         name: Deploy to S3 and CloudFront
         runs-on: ubuntu-latest
         environment: prod
+        if: |
+            (github.event_name == 'pull_request' && github.event.pull_request.merged == true) ||
+            (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
 
         steps:
             - uses: actions/checkout@v5
