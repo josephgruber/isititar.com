@@ -26,6 +26,8 @@ jobs:
 
         steps:
             - uses: actions/checkout@v5
+              with:
+                  ref: main
 
             - name: Configure AWS credentials
               uses: aws-actions/configure-aws-credentials@v5
