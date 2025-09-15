@@ -21,7 +21,10 @@ const answers = [
     "Very doubtful",
     "Who honestly knows",
     "LOL",
-    "Ask Elon"
+    "Ask Elon",
+    "I'm not getting involved",
+    "You're going to have a FUN day",
+    "I see lawyers in your future"
 ];
 
 $(document).on("click", "div.answer, #eightball img", function () {
