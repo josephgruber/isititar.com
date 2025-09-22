@@ -27,42 +27,67 @@ const answers = [
     "I see lawyers in your future"
 ];
 
-$(document).on("click", "div.answer, #eightball img", function () {
+const eightball = document.getElementById('eightball');
+const img = eightball.querySelector("img");
+
+img.addEventListener("click", () => {
     // Check if the action is already in progress. If so, return without running
-    if ($("#eightball").data('inProgress')) {
+    if (eightball.dataset.inProgress) {
         return;
     }
 
     // Set the `inProgress` flag to true to indicate the eightball  is in progress
-    $("#eightball").data('inProgress', true);
+    eightball.dataset.inProgress = true;
 
-    console.log("Click")
     // Remove any existing answer
-    $("div.answer").remove();
+    document.querySelectorAll("div.answer").forEach((div) => div.remove());
 
-    // Randomize the direction, count, distance, and speed of the shake each time
-    let directions = ["up", "left"];
-    let shakes = Math.floor(Math.random() * 15) + 5;
-    let distance = Math.floor(Math.random() * 40) + 20;
-    let speed = Math.floor(Math.random() * 2500) + 1000;
-    let direction = directions[Math.floor(Math.random() * directions.length)];
 
-    // Shake the eightball!
-    $("#eightball img").effect("shake", { direction: direction, times: shakes, distance: distance }, speed);
+    // Randomized shake parameters
+    const shakes = Math.floor(Math.random() * 15) + 5;      // 5–19
+    const distanceX = Math.floor(Math.random() * 40) + 20;   // 20–59 px
+    const distanceY = Math.floor(Math.random() * 40) + 20;   // 20–59 px
+    const totalMs = Math.floor(Math.random() * 2500) + 1000; // 1000–3499 ms
 
-    // Return a random answer fading in over a short period
-    $("#eightball img")
-        .promise()
-        .done(function () {
-            let answer = getAnswer();
-            let item = $(`<div class="answer">${answer}</div>`).hide();
+    // Compute per-iteration duration so total time ≈ totalMs
+    const perIter = Math.max(40, Math.floor(totalMs / shakes));
 
-            $("#eightball").append(item);
-            item.fadeIn(2500);
+    // Configure CSS variables for this run
+    img.style.setProperty("--shake-x-distance", `${(Math.random() < 0.5 ? -1 : 1) * distanceX}px`);
+    img.style.setProperty("--shake-y-distance", `${(Math.random() < 0.5 ? -1 : 1) * distanceY}px`);
+    img.style.setProperty("--shake-duration", `${perIter}ms`);
+    img.style.setProperty("--shake-iterations", `${shakes}`);
 
-            // Reset the `inProgress` flag to false as the action is complete
-            $("#eightball").data('inProgress', false);
+    // Trigger CSS animation
+    img.classList.add("shaking");
+
+    // When the shake finishes, show the answer with a CSS transition
+    const onAnimEnd = () => {
+        img.removeEventListener("animationend", onAnimEnd);
+        img.classList.remove("shaking");
+
+        const answer = document.createElement("div");
+        answer.className = "answer incoming";
+        answer.textContent = getAnswer();
+        eightball.appendChild(answer);
+
+        // Kick off the transition on the next frame
+        requestAnimationFrame(() => {
+            // Two frames to ensure layout
+            requestAnimationFrame(() => {
+                answer.classList.remove("incoming");
+            });
         });
+
+        // Reset inProgress after the fade-in completes
+        const onTransitionEnd = (evt) => {
+            answer.removeEventListener("transitionend", onTransitionEnd);
+            delete eightball.dataset.inProgress;
+        };
+        answer.addEventListener("transitionend", onTransitionEnd);
+    };
+
+    img.addEventListener("animationend", onAnimEnd, { once: true });
 });
 
 function getAnswer() {

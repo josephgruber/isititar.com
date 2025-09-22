@@ -162,3 +162,48 @@ body {
         animation: cycleEnd 0.6s;
     }
 }
+
+#eightball img {
+    cursor: pointer;
+}
+
+/* ===== 8-Ball ITAR API Query Handshake ===== */
+#eightball img.shaking {
+    /* Defaults provided here, JS will update these variables */
+    --shake-x-distance: 24px;
+    --shake-y-distance: 24px;
+    --shake-duration: 120ms;
+    --shake-iterations: 8;
+
+    animation-duration: var(--shake-duration);
+    animation-iteration-count: var(--shake-iterations);
+    animation-direction: alternate;
+    animation-timing-function: ease-in-out;
+    animation-name: shake;
+
+    pointer-events: none;
+    cursor: none;
+}
+
+@keyframes shake {
+    from { transform: translate(0, 0) }
+    to   {
+        transform: translate(
+            var(--shake-x-distance),
+            var(--shake-y-distance)
+        )
+    };
+}
+
+/* ===== Answer fade-in ===== */
+#eightball .answer {
+    color: #eeff;
+    transition-property: color;
+    transition-duration: 2s;
+    transition-timing-function: ease-in;
+}
+#eightball .answer.incoming {
+    color: #0160;
+    pointer-events: none;
+    cursor: none;
+}
