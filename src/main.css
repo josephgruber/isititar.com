@@ -182,6 +182,7 @@ body {
     animation-name: shake;
 
     pointer-events: none;
+    cursor: none;
 }
 
 @keyframes shake {
@@ -196,12 +197,13 @@ body {
 
 /* ===== Answer fade-in ===== */
 #eightball .answer {
+    color: #eeff;
+    transition-property: color;
+    transition-duration: 2s;
+    transition-timing-function: ease-in;
+}
+#eightball .answer.incoming {
     color: #0160;
     pointer-events: none;
-    transition-property: color;
-    transition-duration: 2.5s;
-    transition-timing-function: ease-out;
-}
-#eightball .answer.show {
-    color: #eeff;
+    cursor: none;
 }

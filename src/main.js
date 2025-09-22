@@ -67,7 +67,7 @@ img.addEventListener("click", () => {
         img.classList.remove("shaking");
 
         const answer = document.createElement("div");
-        answer.className = "answer";
+        answer.className = "answer incoming";
         answer.textContent = getAnswer();
         eightball.appendChild(answer);
 
@@ -75,7 +75,7 @@ img.addEventListener("click", () => {
         requestAnimationFrame(() => {
             // Two frames to ensure layout
             requestAnimationFrame(() => {
-                answer.classList.add("show");
+                answer.classList.remove("incoming");
             });
         });
 
