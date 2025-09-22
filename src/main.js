@@ -47,7 +47,6 @@ img.addEventListener("click", () => {
     const shakes = Math.floor(Math.random() * 15) + 5;      // 5–19
     const distanceX = Math.floor(Math.random() * 40) + 20;   // 20–59 px
     const distanceY = Math.floor(Math.random() * 40) + 20;   // 20–59 px
-    const rotateDeg = Math.floor(Math.random() * 160) + 20; // 20-179 deg
     const totalMs = Math.floor(Math.random() * 2500) + 1000; // 1000–3499 ms
 
     // Compute per-iteration duration so total time ≈ totalMs
@@ -56,7 +55,6 @@ img.addEventListener("click", () => {
     // Configure CSS variables for this run
     img.style.setProperty("--shake-x-distance", `${(Math.random() < 0.5 ? -1 : 1) * distanceX}px`);
     img.style.setProperty("--shake-y-distance", `${(Math.random() < 0.5 ? -1 : 1) * distanceY}px`);
-    img.style.setProperty("--shake-xy-rotation", `${Math.random() < 0.5 ? -1 : 1 * rotateDeg}deg`);
     img.style.setProperty("--shake-duration", `${perIter}ms`);
     img.style.setProperty("--shake-iterations", `${shakes}`);
 

@@ -171,9 +171,7 @@ body {
 #eightball img.shaking {
     /* Defaults provided here, JS will update these variables */
     --shake-x-distance: 24px;
-    --shake-x-direction: 1;
     --shake-y-distance: 24px;
-    --shake-y-direction: 1;
     --shake-duration: 120ms;
     --shake-iterations: 8;
 
@@ -193,7 +191,6 @@ body {
             var(--shake-x-distance),
             var(--shake-y-distance)
         )
-        rotate(var(--shake-xy-rotation))
     };
 }
 
